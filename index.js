@@ -1,12 +1,17 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import dotenv from 'dotenv';
+
+dotenv.config({path:'config.env'});
 
 const app = express();
 
-// Allow requests from any origin
+
+//middelwares
 app.use(cors());
 app.options("*", cors());
 
+const PORT=process.env.PORT || 3002; 
 app.post("/", (req, res) => {
   const {username,password}=req.body
   console.log('password', password)
@@ -14,6 +19,6 @@ app.post("/", (req, res) => {
   return res.send("<h1>yes</h1>");
 });
 
-app.listen(3001, () => {
-  console.log("App is listening at port 3001");
+app.listen(PORT, () => {
+  console.log(`server is listening at port ${PORT}`);
 });
