@@ -37,7 +37,6 @@ export const loginToSuperAdmin = asyncHandler(async (req, res, next) => {
         });
 });
 
-
 //funtion to create realme
 export const createRealm = asyncHandler(async (req, res, next) => {
     const { access_token } = req.cookies;
@@ -86,3 +85,51 @@ export const createRealm = asyncHandler(async (req, res, next) => {
         data: response.data,
     });
 });
+
+//funtion to create admin user in realm
+export const createAdminUser = asyncHandler(async (req, res, next) => {
+    const accessToken = req.cookies['access_token'];
+
+    if (!accessToken) {
+        return res.status(401).json({ message: 'Access token not found. Please log in.' });
+    }
+    const { realm, username, email, password, firstName, lastName } = req.body;
+
+    if (!realm || !username || !email || !password) {
+        return res.status(400).json({ message: 'Realm, username, email, and password are required.' });
+    }
+
+    const newUserPayload = {
+        username,
+        email,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        enabled: true,
+        credentials: [
+            {
+                type: 'password',
+                value: password,
+                temporary: false,
+            },
+        ],
+        realmRoles: ['admin'],
+    };
+
+    const url = `${process.env.KEYCLOAK_URL}/admin/realms/${realm}/users`;
+
+    const response = await axios.post(url, newUserPayload, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    res.status(201).json(
+        {
+            success: true,
+            message: `Admin user "${username}" created successfully`,
+            data: response.data
+        }
+    );
+});
+
