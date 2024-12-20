@@ -10,9 +10,11 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser())
 
 //import routers
 import superAdmintRouter from "./src/routes/superAdmin.js";
+import cookieParser from 'cookie-parser';
 
 //mount all routes
 app.use("/admin",superAdmintRouter)
